@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Map of Cape Town with Heat Map Overlay</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" ></script>
+    
+    <script src="./leaflet-heat.js"></script>
+    
+  </head>
+  <body>
+    <script src="./turf.min.js"></script>
+    <div id="mapid" style="height: 100vh;"></div>
+    <script>
+      // create a map object
+      var mymap = L.map('mapid').setView([-33.918861, 18.423300], 10);
+
+      // add a tile layer
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+        maxZoom: 18,
+      }).addTo(mymap);
+
+     
+    // create polygon
+    const polygonCoords = [
+      [-33.918794, 18.417695], // corner 1
+      [-33.925154, 18.422936], // corner 2
+      [-33.930745, 18.427147], // corner 3
+      [-33.926886, 18.438438], // corner 4
+      [-33.912118, 18.422040]  // corner 5
+    ];
+    const polygon = L.polygon(polygonCoords, {
+      color: 'red',
+      fillColor: 'red',
+      fillOpacity: 0.2
+    }).addTo(mymap);
+
+ // generate 10000 random points
+      console.log(polygon.getBounds())
+    var points = [];
+      for (var i = 0; i < 100; i++) {
+        let x = Math.random() * (-33.912 - -33.93074) + -33.929;
+        let y= Math.random() * (18.438 - 18.417) + 18.419;
+        points.push([
+          x,y,
+          Math.random(0,2), // intensity
+        ]);
+      }
+      
+
+    // add tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+      maxZoom: 18
+    }).addTo(mymap);
+
+
+
+
+    
+
+    // fit map to polygon bounds
+    mymap.fitBounds(polygon.getBounds());
+      // create a heat map layer with the points
+      L.heatLayer(points, {
+        radius: 25,
+        blur: 15,
+        maxZoom: 10,
+        gradient: {0.4: 'blue', 0.65: 'lime', 1: 'red'}
+
+      }).addTo(mymap);
+
+
+    </script>
+  </body>
+</html>
